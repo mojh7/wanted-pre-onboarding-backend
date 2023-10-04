@@ -55,6 +55,13 @@ tasks.named('test') {
 	outputs.dir snippetsDir
 }
 
+configurations {
+	all {
+		// log4j2와 Spring 기본 로깅 모듈 logBack과 충돌 방지를 위해 제외
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
+}
+
 ext {
 	snippetsDir = file('build/generated-snippets')
 }
