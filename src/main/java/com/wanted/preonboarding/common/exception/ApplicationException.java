@@ -3,7 +3,7 @@ package com.wanted.preonboarding.common.exception;
 import lombok.Getter;
 
 @Getter
-public abstract class ApplicationException extends RuntimeException {
+public class ApplicationException extends RuntimeException {
     private ErrorCode errorCode;
 
     public ApplicationException(ErrorCode errorCode) {
