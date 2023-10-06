@@ -24,9 +24,16 @@ public class Company extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @Builder
-    public Company(String name) {
-        this.name = name;
-    }
+    @Column(nullable = false)
+    private String nation;
 
+    @Column(nullable = false)
+    private String region;
+
+    @Builder
+    public Company(String name, String nation, String region) {
+        this.name = name;
+        this.nation = nation;
+        this.region = region;
+    }
 }

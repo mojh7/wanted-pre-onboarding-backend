@@ -29,12 +29,6 @@ public class JobPost extends BaseTimeEntity {
     private Company company;
 
     @Column(nullable = false)
-    private String nation;
-
-    @Column(nullable = false)
-    private String region;
-
-    @Column(nullable = false)
     private String position;
 
     @Column(nullable = false)
@@ -50,11 +44,9 @@ public class JobPost extends BaseTimeEntity {
     private boolean deleted = false;
 
     @Builder
-    public JobPost(Company company, String nation, String region, String position,
-                   Long reward, String skills, String description) {
+    public JobPost(Company company, String position, Long reward,
+                   String skills, String description) {
         this.company = company;
-        this.nation = nation;
-        this.region = region;
         this.position = position;
         this.reward = reward;
         this.skills = skills;
