@@ -1,4 +1,4 @@
-package com.wanted.preonboarding.applyhistory.entity;
+package com.wanted.preonboarding.applyjob.entity;
 
 import com.wanted.preonboarding.common.entity.BaseCreatedTimeEntity;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
@@ -19,7 +19,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ApplyHistory extends BaseCreatedTimeEntity {
+public class ApplyJob extends BaseCreatedTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
