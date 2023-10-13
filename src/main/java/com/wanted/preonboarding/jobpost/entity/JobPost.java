@@ -1,4 +1,4 @@
-package com.wanted.preonboarding.recruitment.entity;
+package com.wanted.preonboarding.jobpost.entity;
 
 import com.wanted.preonboarding.common.entity.BaseTimeEntity;
 import com.wanted.preonboarding.company.entity.Company;

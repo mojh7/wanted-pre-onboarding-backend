@@ -1,12 +1,12 @@
-package com.wanted.preonboarding.recruitment.service;
+package com.wanted.preonboarding.jobpost.service;
 
 import com.wanted.preonboarding.common.exception.ApplicationException;
 import com.wanted.preonboarding.common.exception.ErrorCode;
 import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
-import com.wanted.preonboarding.recruitment.dto.request.CreateJobPostRequest;
-import com.wanted.preonboarding.recruitment.entity.JobPost;
-import com.wanted.preonboarding.recruitment.repository.JobPostRepository;
+import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
+import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,7 @@
-package com.wanted.preonboarding.recruitment.dto.request;
+package com.wanted.preonboarding.jobpost.dto.request;
 
 import com.wanted.preonboarding.company.entity.Company;
-import com.wanted.preonboarding.recruitment.entity.JobPost;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
 import lombok.Getter;
 
 import javax.validation.constraints.Max;

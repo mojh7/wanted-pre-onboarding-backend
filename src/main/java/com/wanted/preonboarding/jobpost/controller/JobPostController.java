@@ -1,8 +1,8 @@
-package com.wanted.preonboarding.recruitment.controller;
+package com.wanted.preonboarding.jobpost.controller;
 
 import com.wanted.preonboarding.common.ApiResponse;
-import com.wanted.preonboarding.recruitment.dto.request.CreateJobPostRequest;
-import com.wanted.preonboarding.recruitment.service.JobPostService;
+import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.service.JobPostService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,12 +1,12 @@
-package com.wanted.preonboarding.recruitment.service;
+package com.wanted.preonboarding.jobpost.service;
 
 import com.wanted.preonboarding.company.CompanyFixture;
 import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
-import com.wanted.preonboarding.recruitment.JobPostFixture;
-import com.wanted.preonboarding.recruitment.dto.request.CreateJobPostRequest;
-import com.wanted.preonboarding.recruitment.entity.JobPost;
-import com.wanted.preonboarding.recruitment.repository.JobPostRepository;
+import com.wanted.preonboarding.jobpost.JobPostFixture;
+import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
+import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

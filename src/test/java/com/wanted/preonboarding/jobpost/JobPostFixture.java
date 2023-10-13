@@ -1,9 +1,9 @@
-package com.wanted.preonboarding.recruitment;
+package com.wanted.preonboarding.jobpost;
 
 import com.wanted.preonboarding.company.CompanyFixture;
 import com.wanted.preonboarding.company.entity.Company;
-import com.wanted.preonboarding.recruitment.dto.request.CreateJobPostRequest;
-import com.wanted.preonboarding.recruitment.entity.JobPost;
+import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
 
 
 public class JobPostFixture {

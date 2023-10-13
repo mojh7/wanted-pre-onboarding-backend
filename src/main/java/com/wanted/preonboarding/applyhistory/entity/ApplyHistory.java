@@ -1,6 +1,7 @@
-package com.wanted.preonboarding.recruitment.entity;
+package com.wanted.preonboarding.applyhistory.entity;
 
 import com.wanted.preonboarding.common.entity.BaseCreatedTimeEntity;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.member.entity.Member;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
