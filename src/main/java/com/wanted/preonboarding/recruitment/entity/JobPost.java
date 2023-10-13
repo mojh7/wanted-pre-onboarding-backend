@@ -4,6 +4,7 @@ import com.wanted.preonboarding.common.entity.BaseTimeEntity;
 import com.wanted.preonboarding.company.entity.Company;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ import javax.persistence.ManyToOne;
 
 @Getter
 @Entity
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobPost extends BaseTimeEntity {
 

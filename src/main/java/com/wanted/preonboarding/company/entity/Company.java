@@ -3,6 +3,7 @@ package com.wanted.preonboarding.company.entity;
 import com.wanted.preonboarding.common.entity.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 
 @Getter
 @Entity
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Company extends BaseTimeEntity {
 
