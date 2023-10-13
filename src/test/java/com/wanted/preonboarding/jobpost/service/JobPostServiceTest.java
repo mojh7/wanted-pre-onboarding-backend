@@ -1,5 +1,7 @@
 package com.wanted.preonboarding.jobpost.service;
 
+import com.wanted.preonboarding.common.exception.ApplicationException;
+import com.wanted.preonboarding.common.exception.ErrorCode;
 import com.wanted.preonboarding.company.CompanyFixture;
 import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
@@ -18,7 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +53,7 @@ class JobPostServiceTest {
     @DisplayName("채용 공고 생성 성공")
     @Test
     void createJobPost() {
-        // given: 생성 요청 필드가 유효하고 companyId에 해당하는 회사가 존재할 때
+        // given: 생성 요청 필드가 유효하고 companyId에 해당하는 회사가 존재하도록 설정
         Long companyId = createJobPostRequestWanted1.getCompanyId();
         given(companyRepository.findById(companyId)).willReturn(Optional.of(companyWanted1));
 
@@ -58,6 +64,26 @@ class JobPostServiceTest {
         assertAll(
                 () -> verify(companyRepository).findById(companyId),
                 () -> verify(jobPostRepository).save(jobPostWanted1)
+        );
+    }
+
+    @DisplayName("채용 공고 생성 실패 - companyId에 해당하는 회사가 존재하지 않을 때")
+    @Test
+    void createJobPost_Failure_CompanyNotFound() {
+        // given: 생성 요청 필드는 유효하지만 companyId에 해당하는 회사가 존재하지 않도록 설정
+        Long companyId = createJobPostRequestWanted1.getCompanyId();
+        given(companyRepository.findById(companyId)).willReturn(Optional.empty());
+
+        // when: companyId에 해당하는 회사가 존재하지 않을 때 채용 공고 생성 시도시 COMPANY_NOT_FOUND 예외 발생
+        ApplicationException ex = assertThrows(ApplicationException.class, () -> {
+            jobPostService.createJobPost(createJobPostRequestWanted1);
+        });
+
+        // then: ApplicationException의 ErrorCode가 COMPANY_NOT_FOUND 인지 검증
+        assertAll(
+                () -> verify(companyRepository).findById(companyId),
+                () -> verify(jobPostRepository, never()).save(any()),
+                () -> assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode())
         );
     }
 }
