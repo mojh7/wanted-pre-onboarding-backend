@@ -2,17 +2,17 @@ package com.wanted.preonboarding.jobpost;
 
 import com.wanted.preonboarding.company.CompanyFixture;
 import com.wanted.preonboarding.company.entity.Company;
-import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 
 
 public class JobPostFixture {
 
-    public static CreateJobPostRequest createJobPostRequestWanted1 = new CreateJobPostRequest(
+    public static JobPostCreateRequest jobPostCreateRequestWanted1 = new JobPostCreateRequest(
             1L, "백엔드 주니어 개발자", 1000000L,
             "Python", "원티드랩에서 백엔드 주니어 개발자를 채용합니다.");
 
-    public static CreateJobPostRequest createJobPostRequestWanted2 = new CreateJobPostRequest(
+    public static JobPostCreateRequest jobPostCreateRequestWanted2 = new JobPostCreateRequest(
             1L, "프론트엔드 주니어 개발자", 1000000L,
             "JavaScript", "원티드랩에서 프론트엔드 주니어 개발자를 채용합니다.");
 

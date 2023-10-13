@@ -1,7 +1,7 @@
 package com.wanted.preonboarding.jobpost.controller;
 
 import com.wanted.preonboarding.common.ApiResponse;
-import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
 import com.wanted.preonboarding.jobpost.service.JobPostService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +21,8 @@ public class JobPostController {
     }
 
     @PostMapping("/job-post")
-    public ApiResponse<?> createJobPost(@RequestBody @Valid CreateJobPostRequest createJobPostRequest) {
-        jobPostService.createJobPost(createJobPostRequest);
+    public ApiResponse<?> createJobPost(@RequestBody @Valid JobPostCreateRequest jobPostCreateRequest) {
+        jobPostService.createJobPost(jobPostCreateRequest);
         return ApiResponse.succeed();
     }
 

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
-public class CreateJobPostRequest {
+public class JobPostCreateRequest {
 
     @Min(0)
     @Max(Long.MAX_VALUE)
@@ -32,7 +32,7 @@ public class CreateJobPostRequest {
     @Size(max = 2000)
     private String description;
 
-    public CreateJobPostRequest(Long companyId, String position, Long reward,
+    public JobPostCreateRequest(Long companyId, String position, Long reward,
                                 String skills, String description) {
         this.companyId = companyId;
         this.position = position;
