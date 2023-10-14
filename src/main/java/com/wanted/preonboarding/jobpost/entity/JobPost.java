@@ -43,7 +43,7 @@ public class JobPost extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean isDeleted = false;
 
     @Builder
     public JobPost(Company company, String position, Long reward,
