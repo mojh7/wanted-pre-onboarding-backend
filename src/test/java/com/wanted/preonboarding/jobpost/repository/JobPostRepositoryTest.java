@@ -48,7 +48,7 @@ public class JobPostRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("채용 공고를 삭제하면 isDeleted가 true로 바뀌어야 한다 ")
+    @DisplayName("채용 공고를 삭제하면 isDeleted가 true로 바뀌어야 한다")
     void softDeleteJobPostTest() {
         // given: 삭제되지 않은 채용 공고의 isDeleted 값은 false
         companyRepository.save(company);
@@ -66,5 +66,22 @@ public class JobPostRepositoryTest extends RepositoryTest {
                 () -> assertThat(deletedJobPost.get()
                                                .isDeleted()).isEqualTo(true)
         );
+    }
+
+    @Test
+    @DisplayName("존재하는 채용 공고 단건 조회 함수는 삭제되지 않은 채용 공고를 조회한다")
+    void findByIdAndIsDeletedFalse() {
+        // given
+        companyRepository.save(company);
+        jobPostRepository.save(jobPost);
+
+        // when: 채용 공고를 삭제 후 findByIdAndIsDeletedFalse로 조회하면
+        jobPostRepository.delete(jobPost);
+        jobPostRepository.findByIdAndIsDeletedFalse(jobPost.getId());
+        entityManager.flush();
+        Optional<JobPost> result = jobPostRepository.findByIdAndIsDeletedFalse(jobPost.getId());
+
+        // then: 조회되지 않아야 한다
+        assertThat(result.isEmpty()).isEqualTo(true);
     }
 }
