@@ -43,4 +43,11 @@ public class JobPostService {
         jobPost.update(newJobPost);
         jobPostRepository.save(jobPost);
     }
+
+    @Transactional
+    public void deleteJobPost(long jobPostId) {
+        JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+                                           .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+        jobPostRepository.delete(jobPost);
+    }
 }

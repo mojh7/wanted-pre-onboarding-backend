@@ -4,6 +4,7 @@ import com.wanted.preonboarding.common.ApiResponse;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
 import com.wanted.preonboarding.jobpost.service.JobPostService;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,6 +31,12 @@ public class JobPostController {
     public ApiResponse<?> updateJobPost(@RequestBody @Valid JobPostUpdateRequest jobPostUpdateRequest,
                                         @PathVariable Long jobPostId) {
         jobPostService.updateJobPost(jobPostUpdateRequest, jobPostId);
+        return ApiResponse.succeed();
+    }
+
+    @DeleteMapping("/job-post/{jobPostId}")
+    public ApiResponse<?> deleteJobPost(@PathVariable Long jobPostId) {
+        jobPostService.deleteJobPost(jobPostId);
         return ApiResponse.succeed();
     }
 }
