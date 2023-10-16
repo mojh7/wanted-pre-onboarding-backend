@@ -32,7 +32,7 @@ public class JobPostService {
 
     @Transactional
     public void updateJobPost(JobPostUpdateRequest request, long jobPostId) {
-        JobPost jobPost = jobPostRepository.findById(jobPostId)
+        JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
                                            .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
 
         if(jobPost.getCompany().getId() != request.getCompanyId()) {
