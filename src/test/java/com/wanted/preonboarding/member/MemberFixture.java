@@ -24,6 +24,6 @@ public class MemberFixture {
         if (MEMBER_GILDONG.getId() == null) {
             ReflectionTestUtils.setField(MEMBER_GILDONG, "id", 2L);
         }
-        return MEMBER_CHULSOO;
+        return MEMBER_GILDONG;
     }
 }
