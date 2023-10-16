@@ -43,6 +43,7 @@ class JobPostServiceTest {
 
     private Company companyWanted1;
     private JobPost jobPostWanted1;
+    private JobPost jobPostNaver1;
     private JobPostCreateRequest jobPostCreateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestNaver1;
@@ -52,6 +53,7 @@ class JobPostServiceTest {
         companyWanted1 = CompanyFixture.COMPANY_WANTED();
 
         jobPostWanted1 = JobPostFixture.JOBPOST_WANTED1();
+        jobPostNaver1 = JobPostFixture.JOBPOST_NAVER1();
 
         jobPostCreateRequestWanted1 = JobPostFixture.JOBPOST_CREATE_REQUEST_WANTED1;
 
@@ -155,4 +157,39 @@ class JobPostServiceTest {
         );
     }
 
+    @DisplayName("채용 공고 삭제 성공")
+    @Test
+    void deleteJobPost() {
+        // given
+        Long jobPostId = jobPostNaver1.getId();
+        given(jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)).willReturn(Optional.of(jobPostNaver1));
+
+        // when
+        jobPostService.deleteJobPost(jobPostId);
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findByIdAndIsDeletedFalse(jobPostId),
+                () -> verify(jobPostRepository).delete(jobPostNaver1)
+        );
+    }
+
+    @DisplayName("채용 공고 삭제 실패 : 채용 공고가 존재하지 않을 때")
+    @Test
+    void deleteJobPost_Failure_JOBPOST_NOT_FOUND() {
+        // given
+        Long jobPostId = 234234L;
+        given(jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)).willReturn(Optional.empty());
+
+        // when
+        ApplicationException ex = assertThrows(ApplicationException.class,
+                () -> jobPostService.deleteJobPost(jobPostId));
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findByIdAndIsDeletedFalse(jobPostId),
+                () -> verify(jobPostRepository, never()).delete(any(JobPost.class)),
+                () -> assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.JOBPOST_NOT_FOUND)
+        );
+    }
 }
