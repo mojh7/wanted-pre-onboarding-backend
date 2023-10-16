@@ -43,7 +43,7 @@ public class JobPost extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean isDeleted = false;
 
     @Builder
     public JobPost(Company company, String position, Long reward,
@@ -53,5 +53,13 @@ public class JobPost extends BaseTimeEntity {
         this.reward = reward;
         this.skills = skills;
         this.description = description;
+    }
+
+    public JobPost update(JobPost newJobPost) {
+        this.position = newJobPost.position;
+        this.reward = newJobPost.reward;
+        this.skills = newJobPost.skills;
+        this.position = newJobPost.position;
+        return this;
     }
 }

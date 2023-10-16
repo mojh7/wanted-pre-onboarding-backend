@@ -4,7 +4,8 @@ import com.wanted.preonboarding.common.exception.ApplicationException;
 import com.wanted.preonboarding.common.exception.ErrorCode;
 import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
-import com.wanted.preonboarding.jobpost.dto.request.CreateJobPostRequest;
+import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
+import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,25 @@ public class JobPostService {
     }
 
     @Transactional
-    public void createJobPost(CreateJobPostRequest request) {
+    public void createJobPost(JobPostCreateRequest request) {
         Company company = companyRepository.findById(request.getCompanyId())
                                            .orElseThrow(() -> new ApplicationException(ErrorCode.COMPANY_NOT_FOUND));
 
         JobPost jobPost = request.toEntity(company);
+        jobPostRepository.save(jobPost);
+    }
+
+    @Transactional
+    public void updateJobPost(JobPostUpdateRequest request, long jobPostId) {
+        JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+                                           .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+
+        if(jobPost.getCompany().getId() != request.getCompanyId()) {
+            throw new ApplicationException(ErrorCode.UNABLE_TO_UPDATE_FIELDS, " : company_id");
+        }
+
+        JobPost newJobPost = request.toEntity(jobPost.getCompany());
+        jobPost.update(newJobPost);
         jobPostRepository.save(jobPost);
     }
 }
