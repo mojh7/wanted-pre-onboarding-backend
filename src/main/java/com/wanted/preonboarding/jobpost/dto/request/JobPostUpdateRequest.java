@@ -32,6 +32,14 @@ public class JobPostUpdateRequest {
     @Size(max = 2000)
     private String description;
 
+    public JobPostUpdateRequest(Long companyId, String position, Long reward, String skills, String description) {
+        this.companyId = companyId;
+        this.position = position;
+        this.reward = reward;
+        this.skills = skills;
+        this.description = description;
+    }
+
     public JobPost toEntity(final Company company) {
         return JobPost.builder()
                       .company(company)
