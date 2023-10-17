@@ -1,6 +1,7 @@
 package com.wanted.preonboarding.company.entity;
 
 import com.wanted.preonboarding.common.entity.BaseTimeEntity;
+import com.wanted.preonboarding.jobpost.entity.JobPost;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -9,9 +10,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -31,6 +36,9 @@ public class Company extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String region;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    private List<JobPost> jobPostList = new ArrayList<>();
 
     @Builder
     public Company(String name, String nation, String region) {
