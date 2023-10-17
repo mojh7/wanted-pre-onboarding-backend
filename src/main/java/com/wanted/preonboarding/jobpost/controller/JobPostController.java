@@ -3,6 +3,7 @@ package com.wanted.preonboarding.jobpost.controller;
 import com.wanted.preonboarding.common.ApiResponse;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
+import com.wanted.preonboarding.jobpost.dto.response.JobPostDetailResponse;
 import com.wanted.preonboarding.jobpost.dto.response.JobPostResponse;
 import com.wanted.preonboarding.jobpost.service.JobPostService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +34,11 @@ public class JobPostController {
     @GetMapping("/job-post")
     public ApiResponse<List<JobPostResponse>> retrieveJobPostList() {
         return ApiResponse.succeed(jobPostService.retrieveJobPostList());
+    }
+
+    @GetMapping("/job-post/{jobPostId}")
+    public ApiResponse<JobPostDetailResponse> retrieveJobPostDetail(@PathVariable Long jobPostId) {
+        return ApiResponse.succeed(jobPostService.retrieveJobPostDetail(jobPostId));
     }
 
     @PutMapping("/job-post/{jobPostId}")

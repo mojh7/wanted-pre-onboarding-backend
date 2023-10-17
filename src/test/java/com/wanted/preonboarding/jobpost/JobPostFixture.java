@@ -45,6 +45,22 @@ public class JobPostFixture {
                                                     .description("네이버에서 백엔드 개발자(신입/경력)를 채용합니다.")
                                                     .build();
 
+    private static JobPost JOBPOST_NEXON1 = JobPost.builder()
+                                                   .company(CompanyFixture.COMPANY_NEXON())
+                                                   .position("게임 클라이언트 개발자")
+                                                   .reward(1500000L)
+                                                   .skills("C#, Unity")
+                                                   .description("넥슨에서 게임 클라이언트 개발자를 채용합니다.")
+                                                   .build();
+
+    private static JobPost DELETED_JOBPOST_NEXON2 = JobPost.builder()
+                                                           .company(CompanyFixture.COMPANY_NEXON())
+                                                           .position("게임 클라이언트 개발자")
+                                                           .reward(1500000L)
+                                                           .skills("C#, Unity")
+                                                           .description("넥슨에서 게임 클라이언트 개발자를 채용합니다.")
+                                                           .build();
+
     private static JobPost DELETED_JOBPOST_NAVER2 = JobPost.builder()
                                                    .company(CompanyFixture.COMPANY_NAVER())
                                                    .position("iOS 개발자")
@@ -55,32 +71,53 @@ public class JobPostFixture {
 
 
     public static JobPost JOBPOST_WANTED1() {
-        if (JOBPOST_WANTED1.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_WANTED1, "id", 1L);
+        JobPost jobPost = JOBPOST_WANTED1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 1L);
         }
-        return JOBPOST_WANTED1;
+        return jobPost;
     }
 
     public static JobPost JOBPOST_WANTED2() {
-        if (JOBPOST_WANTED2.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_WANTED2, "id", 3L);
+        JobPost jobPost = JOBPOST_WANTED2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 3L);
         }
-        return JOBPOST_WANTED2;
+        return jobPost;
+    }
+
+    public static JobPost JOBPOST_NEXON1() {
+        JobPost jobPost = JOBPOST_NEXON1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 10500L);
+        }
+        return jobPost;
+    }
+
+    public static JobPost DELETED_JOBPOST_NEXON2() {
+        JobPost jobPost = DELETED_JOBPOST_NEXON2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 10501L);
+            ReflectionTestUtils.setField(jobPost, "isDeleted", true);
+        }
+        return jobPost;
     }
 
 
     public static JobPost JOBPOST_NAVER1() {
-        if (JOBPOST_NAVER1.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_NAVER1, "id", 2L);
+        JobPost jobPost = JOBPOST_NAVER1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 2L);
         }
-        return JOBPOST_NAVER1;
+        return jobPost;
     }
 
     public static JobPost DELETED_JOBPOST_NAVER2() {
-        if (DELETED_JOBPOST_NAVER2.getId() == null) {
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "id", 4L);
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "isDeleted", true);
+        JobPost jobPost = DELETED_JOBPOST_NAVER2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 4L);
+            ReflectionTestUtils.setField(jobPost, "isDeleted", true);
         }
-        return DELETED_JOBPOST_NAVER2;
+        return jobPost;
     }
 }

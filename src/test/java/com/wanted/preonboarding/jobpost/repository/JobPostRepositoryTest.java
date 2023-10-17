@@ -133,12 +133,6 @@ public class JobPostRepositoryTest extends RepositoryTest {
         );
     }
 
-
-
-
-
-
-
     @Test
     @DisplayName("존재하는 채용 공고 목록 조회에서 삭제된 채용 공고는 조회되지 않아야 한다")
     void findAllByIsDeletedFalse_Empty() {
@@ -154,6 +148,31 @@ public class JobPostRepositoryTest extends RepositoryTest {
         // then: 조회되지 않아야 한다
         assertAll(
                 () -> assertThat(jobPostResponseList.isEmpty()).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("Company의 jobPostList(회사가 올린 다른 채용 공고)에는 삭제 여부 상관없이 데이터가 있어야 한다")
+    void jobPostListTest() {
+        // given: 존재하는 채용 공고 3개, 삭제한 채용 공고 1개 설정
+        companyRepository.save(company);
+        jobPostRepository.save(jobPost);
+        jobPostRepository.save(jobPost2);
+        jobPostRepository.save(jobPost3);
+        jobPostRepository.save(deletedJobPost);
+        jobPostRepository.delete(deletedJobPost);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when: 존재하는(삭제하지 않은) 채용 공고로 조회하고 company의 jobPostList 확인
+        JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPost2.getId()).get();
+
+        // then: 존재하는 채용 공고 3개, 삭제한 채용 공고 1개 List의 총 4개의 채용 공고가 있어야함
+        assertAll(
+                () -> assertThat(jobPost.getCompany().getJobPostList().size()).isEqualTo(4),
+                () -> assertThat(jobPost).isEqualTo(jobPost2),
+                () -> assertThat(jobPost.getCompany().getJobPostList().get(1)).isEqualTo(jobPost2),
+                () -> assertThat(jobPost.getCompany().getJobPostList().get(3).isDeleted()).isTrue()
         );
     }
 }

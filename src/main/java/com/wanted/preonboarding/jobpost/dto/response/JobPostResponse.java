@@ -9,7 +9,7 @@ public class JobPostResponse {
 
     private Long jobPostId;
 
-    private String name;
+    private String companyName;
 
     private String nation;
 
@@ -21,10 +21,10 @@ public class JobPostResponse {
 
     private String skills;
 
-    private JobPostResponse(Long jobPostId, String name, String nation, String region,
-                           String position, Long reward, String skills) {
+    private JobPostResponse(Long jobPostId, String companyName, String nation, String region,
+                            String position, Long reward, String skills) {
         this.jobPostId = jobPostId;
-        this.name = name;
+        this.companyName = companyName;
         this.nation = nation;
         this.region = region;
         this.position = position;
