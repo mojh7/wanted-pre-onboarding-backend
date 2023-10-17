@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,13 +30,16 @@ public class JobPostRepositoryTest extends RepositoryTest {
 
     private Company company;
     private JobPost jobPost;
+    private JobPost jobPost2;
+    private JobPost jobPost3;
+    private JobPost deletedJobPost;
 
     @BeforeEach
     void beforeEach() {
         company = Company.builder()
                          .name("카카오")
                          .nation("한국")
-                         .region("경기도")
+                         .region("판교")
                          .build();
 
         jobPost = JobPost.builder()
@@ -45,6 +49,30 @@ public class JobPostRepositoryTest extends RepositoryTest {
                          .skills("JavaScript, React")
                          .description("카카오에서 프론트엔드 개발자를 채용합니다.")
                          .build();
+
+        jobPost2 = JobPost.builder()
+                          .company(company)
+                          .position("백엔드 개발")
+                          .reward(2500000L)
+                          .skills("node.js")
+                          .description("카카오에서 백엔드 개발자를 채용합니다.")
+                          .build();
+
+        jobPost3 = JobPost.builder()
+                          .company(company)
+                          .position("데브옵스 엔지니어")
+                          .reward(2500000L)
+                          .skills("k8s, istio")
+                          .description("카카오에서 데브옵스 엔지니어를 채용합니다.")
+                          .build();
+
+        deletedJobPost = JobPost.builder()
+                                .company(company)
+                                .position("백엔드")
+                                .reward(500000L)
+                                .skills("Java, Spring")
+                                .description("카카오에서 Java&Spring 백엔드 개발자를 채용합니다.")
+                                .build();
     }
 
     @Test
@@ -83,5 +111,49 @@ public class JobPostRepositoryTest extends RepositoryTest {
 
         // then: 조회되지 않아야 한다
         assertThat(result.isEmpty()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("존재하는 채용 공고 목록 조회")
+    void findAllByIsDeletedFalse() {
+        // given
+        companyRepository.save(company);
+        jobPostRepository.save(jobPost);
+        jobPostRepository.save(jobPost2);
+        jobPostRepository.save(jobPost3);
+        entityManager.flush();
+
+        // when
+        List<JobPost> jobPostResponseList = jobPostRepository.findAllByIsDeletedFalse();
+
+        // then
+        assertAll(
+                () -> assertThat(jobPostResponseList.size()).isEqualTo(3),
+                () -> assertThat(jobPostResponseList.get(1)).isEqualTo(jobPost2)
+        );
+    }
+
+
+
+
+
+
+
+    @Test
+    @DisplayName("존재하는 채용 공고 목록 조회에서 삭제된 채용 공고는 조회되지 않아야 한다")
+    void findAllByIsDeletedFalse_Empty() {
+        // given
+        companyRepository.save(company);
+        jobPostRepository.save(deletedJobPost);
+        jobPostRepository.delete(deletedJobPost);
+        entityManager.flush();
+
+        // when
+        List<JobPost> jobPostResponseList = jobPostRepository.findAllByIsDeletedFalse();
+
+        // then: 조회되지 않아야 한다
+        assertAll(
+                () -> assertThat(jobPostResponseList.isEmpty()).isTrue()
+        );
     }
 }

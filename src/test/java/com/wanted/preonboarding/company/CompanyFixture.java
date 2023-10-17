@@ -14,7 +14,7 @@ public class CompanyFixture {
     private static Company COMPANY_NAVER = Company.builder()
                                                   .name("네이버")
                                                   .nation("한국")
-                                                  .region("경기도")
+                                                  .region("판교")
                                                   .build();
 
     public static Company COMPANY_WANTED() {

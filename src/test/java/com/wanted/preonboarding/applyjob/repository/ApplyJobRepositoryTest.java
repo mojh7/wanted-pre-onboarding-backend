@@ -45,7 +45,7 @@ class ApplyJobRepositoryTest extends RepositoryTest {
         company = Company.builder()
                          .name("카카오")
                          .nation("한국")
-                         .region("경기도")
+                         .region("판교")
                          .build();
 
         jobPost = JobPost.builder()
