@@ -14,16 +14,18 @@ public class MemberFixture {
                                                  .build();
 
     public static Member MEMBER_CHULSOO() {
-        if (MEMBER_CHULSOO.getId() == null) {
-            ReflectionTestUtils.setField(MEMBER_CHULSOO, "id", 1L);
+        Member member = MEMBER_CHULSOO;
+        if (member.getId() == null) {
+            ReflectionTestUtils.setField(member, "id", 1L);
         }
-        return MEMBER_CHULSOO;
+        return member;
     }
 
     public static Member MEMBER_GILDONG() {
-        if (MEMBER_GILDONG.getId() == null) {
-            ReflectionTestUtils.setField(MEMBER_GILDONG, "id", 2L);
+        Member member = MEMBER_GILDONG;
+        if (member.getId() == null) {
+            ReflectionTestUtils.setField(member, "id", 2L);
         }
-        return MEMBER_GILDONG;
+        return member;
     }
 }

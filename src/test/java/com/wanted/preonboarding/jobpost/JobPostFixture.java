@@ -71,47 +71,53 @@ public class JobPostFixture {
 
 
     public static JobPost JOBPOST_WANTED1() {
-        if (JOBPOST_WANTED1.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_WANTED1, "id", 1L);
+        JobPost jobPost = JOBPOST_WANTED1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 1L);
         }
-        return JOBPOST_WANTED1;
+        return jobPost;
     }
 
     public static JobPost JOBPOST_WANTED2() {
-        if (JOBPOST_WANTED2.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_WANTED2, "id", 3L);
+        JobPost jobPost = JOBPOST_WANTED2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 3L);
         }
-        return JOBPOST_WANTED2;
+        return jobPost;
     }
 
     public static JobPost JOBPOST_NEXON1() {
-        if (JOBPOST_NEXON1.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_NEXON1, "id", 10500L);
+        JobPost jobPost = JOBPOST_NEXON1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 10500L);
         }
-        return JOBPOST_NEXON1;
+        return jobPost;
     }
 
     public static JobPost DELETED_JOBPOST_NEXON2() {
-        if (DELETED_JOBPOST_NEXON2.getId() == null) {
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NEXON2, "id", 10501L);
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "isDeleted", true);
+        JobPost jobPost = DELETED_JOBPOST_NEXON2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 10501L);
+            ReflectionTestUtils.setField(jobPost, "isDeleted", true);
         }
-        return DELETED_JOBPOST_NEXON2;
+        return jobPost;
     }
 
 
     public static JobPost JOBPOST_NAVER1() {
-        if (JOBPOST_NAVER1.getId() == null) {
-            ReflectionTestUtils.setField(JOBPOST_NAVER1, "id", 2L);
+        JobPost jobPost = JOBPOST_NAVER1;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 2L);
         }
-        return JOBPOST_NAVER1;
+        return jobPost;
     }
 
     public static JobPost DELETED_JOBPOST_NAVER2() {
-        if (DELETED_JOBPOST_NAVER2.getId() == null) {
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "id", 4L);
-            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "isDeleted", true);
+        JobPost jobPost = DELETED_JOBPOST_NAVER2;
+        if (jobPost.getId() == null) {
+            ReflectionTestUtils.setField(jobPost, "id", 4L);
+            ReflectionTestUtils.setField(jobPost, "isDeleted", true);
         }
-        return DELETED_JOBPOST_NAVER2;
+        return jobPost;
     }
 }

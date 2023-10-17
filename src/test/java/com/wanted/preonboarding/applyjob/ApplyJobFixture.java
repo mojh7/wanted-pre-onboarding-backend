@@ -18,9 +18,10 @@ public class ApplyJobFixture {
 
 
     public static ApplyJob APPLY_JOB1() {
-        if (APPLY_JOB1.getId() == null) {
-            ReflectionTestUtils.setField(APPLY_JOB1, "id", 1L);
+        ApplyJob applyJob = APPLY_JOB1;
+        if (applyJob.getId() == null) {
+            ReflectionTestUtils.setField(applyJob, "id", 1L);
         }
-        return APPLY_JOB1;
+        return applyJob;
     }
 }

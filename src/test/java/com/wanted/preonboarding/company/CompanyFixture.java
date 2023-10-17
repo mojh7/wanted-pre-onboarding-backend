@@ -27,17 +27,19 @@ public class CompanyFixture {
                                                   .build();
 
     public static Company COMPANY_WANTED() {
-        if (COMPANY_WANTED.getId() == null) {
-            ReflectionTestUtils.setField(COMPANY_WANTED, "id", 1L);
+        Company company = COMPANY_WANTED;
+        if (company.getId() == null) {
+            ReflectionTestUtils.setField(company, "id", 1L);
         }
-        return COMPANY_WANTED;
+        return company;
     }
 
     public static Company COMPANY_NAVER() {
-        if (COMPANY_NAVER.getId() == null) {
-            ReflectionTestUtils.setField(COMPANY_NAVER, "id", 2L);
+        Company company = COMPANY_NAVER;
+        if (company.getId() == null) {
+            ReflectionTestUtils.setField(company, "id", 2L);
         }
-        return COMPANY_NAVER;
+        return company;
     }
 
     /**
