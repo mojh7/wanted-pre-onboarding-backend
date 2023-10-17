@@ -6,6 +6,7 @@ import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
+import com.wanted.preonboarding.jobpost.dto.response.JobPostDetailResponse;
 import com.wanted.preonboarding.jobpost.dto.response.JobPostResponse;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
@@ -38,6 +39,18 @@ public class JobPostService {
         return jobPostRepository.findAllByIsDeletedFalse().stream()
                                 .map(JobPostResponse::from)
                                 .collect(Collectors.toList());
+    }
+
+    public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
+        JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+                                           .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+
+        List<Long> companyOtherJobPostList = jobPost.getCompany().getJobPostList().stream()
+                                                    .filter(jp -> !jp.isDeleted())
+                                                    .map(JobPost::getId)
+                                                    .collect(Collectors.toList());
+
+        return JobPostDetailResponse.of(jobPost, companyOtherJobPostList);
     }
 
     @Transactional
