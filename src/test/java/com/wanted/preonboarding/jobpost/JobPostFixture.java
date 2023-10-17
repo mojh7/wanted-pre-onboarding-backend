@@ -45,6 +45,22 @@ public class JobPostFixture {
                                                     .description("네이버에서 백엔드 개발자(신입/경력)를 채용합니다.")
                                                     .build();
 
+    private static JobPost JOBPOST_NEXON1 = JobPost.builder()
+                                                   .company(CompanyFixture.COMPANY_NEXON())
+                                                   .position("게임 클라이언트 개발자")
+                                                   .reward(1500000L)
+                                                   .skills("C#, Unity")
+                                                   .description("넥슨에서 게임 클라이언트 개발자를 채용합니다.")
+                                                   .build();
+
+    private static JobPost DELETED_JOBPOST_NEXON2 = JobPost.builder()
+                                                           .company(CompanyFixture.COMPANY_NEXON())
+                                                           .position("게임 클라이언트 개발자")
+                                                           .reward(1500000L)
+                                                           .skills("C#, Unity")
+                                                           .description("넥슨에서 게임 클라이언트 개발자를 채용합니다.")
+                                                           .build();
+
     private static JobPost DELETED_JOBPOST_NAVER2 = JobPost.builder()
                                                    .company(CompanyFixture.COMPANY_NAVER())
                                                    .position("iOS 개발자")
@@ -66,6 +82,21 @@ public class JobPostFixture {
             ReflectionTestUtils.setField(JOBPOST_WANTED2, "id", 3L);
         }
         return JOBPOST_WANTED2;
+    }
+
+    public static JobPost JOBPOST_NEXON1() {
+        if (JOBPOST_NEXON1.getId() == null) {
+            ReflectionTestUtils.setField(JOBPOST_NEXON1, "id", 10500L);
+        }
+        return JOBPOST_NEXON1;
+    }
+
+    public static JobPost DELETED_JOBPOST_NEXON2() {
+        if (DELETED_JOBPOST_NEXON2.getId() == null) {
+            ReflectionTestUtils.setField(DELETED_JOBPOST_NEXON2, "id", 10501L);
+            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "isDeleted", true);
+        }
+        return DELETED_JOBPOST_NEXON2;
     }
 
 

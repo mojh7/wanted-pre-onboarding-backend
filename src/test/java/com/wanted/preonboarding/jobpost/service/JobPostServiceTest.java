@@ -8,6 +8,7 @@ import com.wanted.preonboarding.company.repository.CompanyRepository;
 import com.wanted.preonboarding.jobpost.JobPostFixture;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
+import com.wanted.preonboarding.jobpost.dto.response.JobPostDetailResponse;
 import com.wanted.preonboarding.jobpost.dto.response.JobPostResponse;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
@@ -47,7 +48,8 @@ class JobPostServiceTest {
     private JobPost jobPostWanted1;
     private JobPost jobPostWanted2;
     private JobPost jobPostNaver1;
-    private JobPost deletedJobPostNaver2;
+    private JobPost jobPostNexon1;
+    private JobPost deletedJobPostNexon2;
     private JobPostCreateRequest jobPostCreateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestNaver1;
@@ -59,10 +61,10 @@ class JobPostServiceTest {
         jobPostWanted1 = JobPostFixture.JOBPOST_WANTED1();
         jobPostWanted2 = JobPostFixture.JOBPOST_WANTED2();
         jobPostNaver1 = JobPostFixture.JOBPOST_NAVER1();
-        deletedJobPostNaver2 = JobPostFixture.DELETED_JOBPOST_NAVER2();
+        jobPostNexon1 = JobPostFixture.JOBPOST_NEXON1();
+        deletedJobPostNexon2 = JobPostFixture.DELETED_JOBPOST_NEXON2();
 
         jobPostCreateRequestWanted1 = JobPostFixture.JOBPOST_CREATE_REQUEST_WANTED1;
-
         jobPostUpdateRequestWanted1 = JobPostFixture.JOBPOST_UPDATE_REQUEST_WANTED1;
         jobPostUpdateRequestNaver1 = JobPostFixture.JOBPOST_UPDATE_REQUEST_NAVER1;
     }
@@ -144,6 +146,47 @@ class JobPostServiceTest {
         assertAll(
                 () -> verify(jobPostRepository).findAllByIsDeletedFalse(),
                 () -> assertThat(result.isEmpty()).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("채용 공고 상세 페이지 조회 성공 : 삭제되지 않은 채용 공고만 '회사가 올린 다른 채용 공고' 필드에 포함해 응답")
+    void retrieveJobPostDetail() {
+        // given: 채용 공고를 삭제한 적이 있는 회사에서 작성한 채용 공고로 입력 설정
+        JobPost jobPost = jobPostNexon1;
+        Long jobPostId = jobPost.getId();
+        given(jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)).willReturn(Optional.of(jobPost));
+
+        // when
+        JobPostDetailResponse result = jobPostService.retrieveJobPostDetail(jobPostId);
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findByIdAndIsDeletedFalse(jobPostId),
+                () -> assertThat(result.getJobPostId()).isEqualTo(jobPostId),
+                () -> assertThat(result.getCompanyOtherJobPostList().size()).isEqualTo(2),
+                () -> assertThat(jobPost.getCompany().getJobPostList().stream()
+                                        .filter(JobPost::isDeleted)
+                                        .count()).isGreaterThan(0)
+        );
+    }
+
+    @Test
+    @DisplayName("채용 공고 상세 페이지 조회 실패 : 존재하지 않은(삭제된) 채용 공고로 상세 페이지 조회")
+    void retrieveJobPostDetail_JobPostNotFound() {
+        // given: 삭제된 채용 공고로 입력 설정
+        JobPost jobPost = deletedJobPostNexon2;
+        Long jobPostId = jobPost.getId();
+        given(jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)).willReturn(Optional.empty());
+
+        // when
+        ApplicationException ex = assertThrows(ApplicationException.class,
+                () -> jobPostService.retrieveJobPostDetail(jobPostId));
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findByIdAndIsDeletedFalse(jobPostId),
+                () -> assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.JOBPOST_NOT_FOUND)
         );
     }
 
