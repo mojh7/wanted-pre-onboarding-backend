@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -68,8 +67,8 @@ class JobPostServiceTest {
         jobPostUpdateRequestNaver1 = JobPostFixture.JOBPOST_UPDATE_REQUEST_NAVER1;
     }
 
-    @DisplayName("채용 공고 생성 성공")
     @Test
+    @DisplayName("채용 공고 생성 성공")
     void createJobPost() {
         // given: 생성 요청 필드가 유효하고 companyId에 해당하는 회사가 존재하도록 설정
         Long companyId = jobPostCreateRequestWanted1.getCompanyId();
@@ -85,8 +84,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 생성 실패 : companyId에 해당하는 회사가 존재하지 않을 때")
     @Test
+    @DisplayName("채용 공고 생성 실패 : companyId에 해당하는 회사가 존재하지 않을 때")
     void createJobPost_Failure_CompanyNotFound() {
         // given: 생성 요청 필드는 유효하지만 companyId에 해당하는 회사가 존재하지 않도록 설정
         Long companyId = jobPostCreateRequestWanted1.getCompanyId();
@@ -101,12 +100,12 @@ class JobPostServiceTest {
         assertAll(
                 () -> verify(companyRepository).findById(companyId),
                 () -> verify(jobPostRepository, never()).save(any(JobPost.class)),
-                () -> assertEquals(ErrorCode.COMPANY_NOT_FOUND, ex.getErrorCode())
+                () -> assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.COMPANY_NOT_FOUND)
         );
     }
 
-    @DisplayName("채용 공고 목록 조회 성공")
     @Test
+    @DisplayName("채용 공고 목록 조회 성공")
     void retrieveJobPostList() {
         // given
         List<JobPost> jobPostList = new ArrayList<>();
@@ -131,8 +130,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 목록 조회 성공 : 없으면 빈 List 반환")
     @Test
+    @DisplayName("채용 공고 목록 조회 성공 : 없으면 빈 List 반환")
     void retrieveJobPostList_Empty() {
         // given
         List<JobPost> jobPostList = new ArrayList<>();
@@ -148,8 +147,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 수정 성공")
     @Test
+    @DisplayName("채용 공고 수정 성공")
     void updateJobPost() {
         // given: 수정 요청에서 companyId는 변경되지 않고 그 외 필드는 유효하도록 설정
         Long jobPostId = jobPostWanted1.getId();
@@ -165,8 +164,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 수정 실패 : 수정하려는 채용 공고가 없을 때")
     @Test
+    @DisplayName("채용 공고 수정 실패 : 수정하려는 채용 공고가 없을 때")
     void updateJobPost_Failure_AlreadyDeletedJobpost() {
         // given: 수정 요청에서 companyId는 변경되지 않고 그 외 필드는 유효하지만 존재하지 않은 채용 공고 id 설정
         Long jobPostId = 357523L;
@@ -184,8 +183,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 수정 실패 : 채용 공고의 company_id 필드를 수정하려 할 때")
     @Test
+    @DisplayName("채용 공고 수정 실패 : 채용 공고의 company_id 필드를 수정하려 할 때")
     void updateJobPost_Failure_UnableToUpdateFields() {
         // given: 채용 공고의 companyId와 다른 companyId를 가진 수정 요청 설정
         JobPost jobPost = jobPostWanted1;
@@ -206,8 +205,8 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 삭제 성공")
     @Test
+    @DisplayName("채용 공고 삭제 성공")
     void deleteJobPost() {
         // given
         Long jobPostId = jobPostNaver1.getId();
@@ -223,9 +222,9 @@ class JobPostServiceTest {
         );
     }
 
-    @DisplayName("채용 공고 삭제 실패 : 채용 공고가 존재하지 않을 때")
     @Test
-    void deleteJobPost_Failure_JOBPOST_NOT_FOUND() {
+    @DisplayName("채용 공고 삭제 실패 : 채용 공고가 존재하지 않을 때")
+    void deleteJobPost_Failure_JobPostNotFound() {
         // given
         Long jobPostId = 234234L;
         given(jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)).willReturn(Optional.empty());
