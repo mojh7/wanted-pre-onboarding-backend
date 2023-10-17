@@ -6,10 +6,14 @@ import com.wanted.preonboarding.company.entity.Company;
 import com.wanted.preonboarding.company.repository.CompanyRepository;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
+import com.wanted.preonboarding.jobpost.dto.response.JobPostResponse;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JobPostService {
@@ -28,6 +32,12 @@ public class JobPostService {
 
         JobPost jobPost = request.toEntity(company);
         jobPostRepository.save(jobPost);
+    }
+
+    public List<JobPostResponse> retrieveJobPostList() {
+        return jobPostRepository.findAllByIsDeletedFalse().stream()
+                                .map(JobPostResponse::from)
+                                .collect(Collectors.toList());
     }
 
     @Transactional
