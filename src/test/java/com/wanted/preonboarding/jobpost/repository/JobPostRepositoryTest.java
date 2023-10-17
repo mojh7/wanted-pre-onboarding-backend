@@ -126,7 +126,7 @@ public class JobPostRepositoryTest extends RepositoryTest {
         // when
         List<JobPost> jobPostResponseList = jobPostRepository.findAllByIsDeletedFalse();
 
-        // then: 조회되지 않아야 한다
+        // then
         assertAll(
                 () -> assertThat(jobPostResponseList.size()).isEqualTo(3),
                 () -> assertThat(jobPostResponseList.get(1)).isEqualTo(jobPost2)
