@@ -8,6 +8,7 @@ import com.wanted.preonboarding.company.repository.CompanyRepository;
 import com.wanted.preonboarding.jobpost.JobPostFixture;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
+import com.wanted.preonboarding.jobpost.dto.response.JobPostResponse;
 import com.wanted.preonboarding.jobpost.entity.JobPost;
 import com.wanted.preonboarding.jobpost.repository.JobPostRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +46,9 @@ class JobPostServiceTest {
 
     private Company companyWanted1;
     private JobPost jobPostWanted1;
+    private JobPost jobPostWanted2;
     private JobPost jobPostNaver1;
+    private JobPost deletedJobPostNaver2;
     private JobPostCreateRequest jobPostCreateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestWanted1;
     private JobPostUpdateRequest jobPostUpdateRequestNaver1;
@@ -53,7 +58,9 @@ class JobPostServiceTest {
         companyWanted1 = CompanyFixture.COMPANY_WANTED();
 
         jobPostWanted1 = JobPostFixture.JOBPOST_WANTED1();
+        jobPostWanted2 = JobPostFixture.JOBPOST_WANTED2();
         jobPostNaver1 = JobPostFixture.JOBPOST_NAVER1();
+        deletedJobPostNaver2 = JobPostFixture.DELETED_JOBPOST_NAVER2();
 
         jobPostCreateRequestWanted1 = JobPostFixture.JOBPOST_CREATE_REQUEST_WANTED1;
 
@@ -98,6 +105,48 @@ class JobPostServiceTest {
         );
     }
 
+    @DisplayName("채용 공고 목록 조회 성공")
+    @Test
+    void retrieveJobPostList() {
+        // given
+        List<JobPost> jobPostList = new ArrayList<>();
+        jobPostList.add(jobPostWanted1);
+        jobPostList.add(jobPostNaver1);
+        jobPostList.add(jobPostWanted2);
+        given(jobPostRepository.findAllByIsDeletedFalse()).willReturn(jobPostList);
+
+        // when
+        List<JobPostResponse> result = jobPostService.retrieveJobPostList();
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findAllByIsDeletedFalse(),
+                () -> assertThat(result.size()).isEqualTo(jobPostList.size()),
+                () -> {
+                    JobPostResponse jobPostResponse = result.get(1);
+                    assertThat(jobPostResponse.getJobPostId()).isEqualTo(jobPostNaver1.getId());
+                    assertThat(jobPostResponse.getName()).isEqualTo(jobPostNaver1.getCompany().getName());
+                    assertThat(jobPostResponse.getPosition()).isEqualTo(jobPostNaver1.getPosition());
+                }
+        );
+    }
+
+    @DisplayName("채용 공고 목록 조회 성공 : 없으면 빈 List 반환")
+    @Test
+    void retrieveJobPostList_Empty() {
+        // given
+        List<JobPost> jobPostList = new ArrayList<>();
+        given(jobPostRepository.findAllByIsDeletedFalse()).willReturn(jobPostList);
+
+        // when
+        List<JobPostResponse> result = jobPostService.retrieveJobPostList();
+
+        // then
+        assertAll(
+                () -> verify(jobPostRepository).findAllByIsDeletedFalse(),
+                () -> assertThat(result.isEmpty()).isTrue()
+        );
+    }
 
     @DisplayName("채용 공고 수정 성공")
     @Test

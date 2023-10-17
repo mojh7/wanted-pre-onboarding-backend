@@ -29,6 +29,14 @@ public class JobPostFixture {
                                                     .description("원티드랩에서 백엔드 주니어 개발자를 채용합니다.")
                                                     .build();
 
+    private static JobPost JOBPOST_WANTED2 = JobPost.builder()
+                                                    .company(CompanyFixture.COMPANY_WANTED())
+                                                    .position("프론트엔드 주니어 개발자")
+                                                    .reward(1000000L)
+                                                    .skills("Vue")
+                                                    .description("원티드랩에서 프론트엔드 주니어 개발자를 채용합니다.")
+                                                    .build();
+
     private static JobPost JOBPOST_NAVER1 = JobPost.builder()
                                                     .company(CompanyFixture.COMPANY_NAVER())
                                                     .position("백엔드 개발자")
@@ -37,6 +45,15 @@ public class JobPostFixture {
                                                     .description("네이버에서 백엔드 개발자(신입/경력)를 채용합니다.")
                                                     .build();
 
+    private static JobPost DELETED_JOBPOST_NAVER2 = JobPost.builder()
+                                                   .company(CompanyFixture.COMPANY_NAVER())
+                                                   .position("iOS 개발자")
+                                                   .reward(100000L)
+                                                   .skills("Swift")
+                                                   .description("네이버에서 iOS 개발자를 채용합니다.")
+                                                   .build();
+
+
     public static JobPost JOBPOST_WANTED1() {
         if (JOBPOST_WANTED1.getId() == null) {
             ReflectionTestUtils.setField(JOBPOST_WANTED1, "id", 1L);
@@ -44,10 +61,26 @@ public class JobPostFixture {
         return JOBPOST_WANTED1;
     }
 
+    public static JobPost JOBPOST_WANTED2() {
+        if (JOBPOST_WANTED2.getId() == null) {
+            ReflectionTestUtils.setField(JOBPOST_WANTED2, "id", 3L);
+        }
+        return JOBPOST_WANTED2;
+    }
+
+
     public static JobPost JOBPOST_NAVER1() {
         if (JOBPOST_NAVER1.getId() == null) {
             ReflectionTestUtils.setField(JOBPOST_NAVER1, "id", 2L);
         }
         return JOBPOST_NAVER1;
+    }
+
+    public static JobPost DELETED_JOBPOST_NAVER2() {
+        if (DELETED_JOBPOST_NAVER2.getId() == null) {
+            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "id", 4L);
+            ReflectionTestUtils.setField(DELETED_JOBPOST_NAVER2, "isDeleted", true);
+        }
+        return DELETED_JOBPOST_NAVER2;
     }
 }
