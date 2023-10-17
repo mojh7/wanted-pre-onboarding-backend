@@ -126,7 +126,7 @@ class JobPostServiceTest {
                 () -> {
                     JobPostResponse jobPostResponse = result.get(1);
                     assertThat(jobPostResponse.getJobPostId()).isEqualTo(jobPostNaver1.getId());
-                    assertThat(jobPostResponse.getName()).isEqualTo(jobPostNaver1.getCompany().getName());
+                    assertThat(jobPostResponse.getCompanyName()).isEqualTo(jobPostNaver1.getCompany().getName());
                     assertThat(jobPostResponse.getPosition()).isEqualTo(jobPostNaver1.getPosition());
                 }
         );
