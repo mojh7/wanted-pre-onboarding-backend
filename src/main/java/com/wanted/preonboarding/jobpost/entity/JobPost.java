@@ -61,7 +61,7 @@ public class JobPost extends BaseTimeEntity {
         this.position = newJobPost.position;
         this.reward = newJobPost.reward;
         this.skills = newJobPost.skills;
-        this.position = newJobPost.position;
+        this.description = newJobPost.description;
         return this;
     }
 }
