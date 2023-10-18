@@ -123,11 +123,48 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 ### 2. 채용공고 수정
 
-채용공고 수정 API의 HTTP Method를 PUT으로 택해서 요청 필드가 비어 있지 않을 때 채용공고를 수정하도록 했습니다.
+모든 요청 필드가 입력될 때만 채용공고를 수정하도록 수정 요청 dto 필드를 `@NotNull` 이나 `@NotBlank` 로 유효성을 검증했습니다.
+
+회사 id외에 필드만 수정될 수 있도록 채용공고의 회사 id와 요청 데이터의 회사 id와 같은지 비교 후 다르면 예외가 발생하도록 구현했습니다.
+
+```java
+@Transactional
+public void updateJobPost(JobPostUpdateRequest request, long jobPostId) {
+    JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+        .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+
+    // 회사 id는 변경할 수 없다
+    if(jobPost.getCompany().getId() != request.getCompanyId()) {
+        throw new ApplicationException(ErrorCode.UNABLE_TO_UPDATE_FIELDS, " : company_id");
+    }
+
+    JobPost newJobPost = request.toEntity(jobPost.getCompany());
+    jobPost.update(newJobPost);
+    jobPostRepository.save(jobPost);
+}
+```
+
+
+
+채용공고 수정 요청 성공
 
 ![](./etc/2_1.jpg)
 
+
+
+채용공고 수정 요청 실패
+
+- 요청 데이터 중 사용기술(skills)이 빠졌을 때
+
 ![입력 필드 빠짐](./etc/2_2.jpg)
+
+
+
+채용공고 수정 요청 실패
+
+- company_id를 기존의 값과 다른 값으로 변경하려할 때
+
+![채용 공고 수정 요청 실패2](./etc/2_3.jpg)
 
 <br>
 
@@ -136,12 +173,22 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 삭제는 soft delete 방식으로 구현 했습니다.
 
 - **과제 요구 조건**과는 상관없지만 실제 서비스에서는 통계 데이터 활용 등 여러 이유로 삭제를 soft delete 방식으로 구현할 수도 있다는 것을 알게 됐고 구현 시 hard delete와의 차이점을 알고 싶어 soft delete방식을 택했습니다.
+
 - 채용공고(job_post)에만 삭제 여부를 판별하는 컬럼 `is_deleted` 을 가집니다.
+
 - JPA 구현체 Hibernate에서 Soft Delete 구현에 도움을 주는 `@SQLDelete` `@Where` 를 제공합니다
+
   - `@SQLDelete` 으로 entity를 삭제할 때 실행할 쿼리를 지정할 수 있어 `@SQLDelete(sql = "UPDATE job_post SET is_deleted = true WHERE id = ?")`  처럼  `is_delete` 값을 true로 update해서 soft delete를 구현합니다
   - `@Where`을 통해 entity의 조회 쿼리에  `where is_deleted = false` 와 같은 조건을 default로 추가할 수 있습니다.
     - 하지만 실무에서는 경우에 따라서 실제 어떤 데이터가 삭제되었는지 삭제된 데이터도 조회할 수 있어야 해서 `@Where`를 안쓰고 불편해도 직접 JPQL에서 삭제 데이터를 제외하고 조회하거나 애플리케이션에서 제외한다고 합니다.
     - **과제 요구 조건**에는 원래 soft delete에 대한 조건도 없고, 당연히 삭제된 데이터를 조회할 필요가 없어서 `@Where` 만으로 충분합니다. 하지만 `@Where` 안쓰고 구현했을 때를 경험하고 싶어서 필요에 따라 기존에 있던 `findById` 나 `findAll` 함수 말고 추가적인 함수를 정의해 삭제되지 않은 채용공고를 제외하고 조회하거나 Service Layer에서 필터링해서 처리했습니다.
+
+-  다음과 같이 필요에 따라 조회할 때 is_delete = false 인 채용공고만 조회되도록 함수를 정의해서 존재하는 채용공고(=삭제하지 않은 채용공고)를 조회 했습니다.
+```java
+// JpaRepository.java
+Optional<JobPost> findByIdAndIsDeletedFalse(Long id);
+```
+
 
 삭제 성공 응답
 
@@ -206,15 +253,15 @@ jobPostList 에서 삭제되지 않은 채용공고만을 필터링하고 **과�
 
 @Transactional(readOnly = true)
 public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
-	JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+    JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
                                        .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
 
-	List<Long> companyOtherJobPostList = jobPost.getCompany().getJobPostList().stream()
-    											.filter(jp -> !jp.isDeleted())
+    List<Long> companyOtherJobPostList = jobPost.getCompany().getJobPostList().stream()
+                                                .filter(jp -> !jp.isDeleted())
                                                 .map(JobPost::getId)
                                                 .collect(Collectors.toList());
-
-	return JobPostDetailResponse.of(jobPost, companyOtherJobPostList);
+    
+    return JobPostDetailResponse.of(jobPost, companyOtherJobPostList);
 }
 ```
 
@@ -254,12 +301,12 @@ public void applyJobPost(ApplyJobCreateRequest request) {
     if(applyJobRepository.findByJobPostAndMember(jobPost, member).isPresent()) {
         throw new ApplicationException(ErrorCode.ALREADY_APPLY_JOBPOST);
     }
-
+    
     ApplyJob applyJob = ApplyJob.builder()
                                 .jobPost(jobPost)
                                 .member(member)
                                 .build();
-
+    
     applyJobRepository.save(applyJob);
 }
 ```
@@ -278,3 +325,7 @@ public void applyJobPost(ApplyJobCreateRequest request) {
 
 ### 7. 테스트
 
+
+```
+
+```
