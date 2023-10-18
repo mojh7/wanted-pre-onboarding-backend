@@ -151,7 +151,6 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 ```java
 // JobPostService.java
-// ... 생략 ...
 
 @Transactional
 public void deleteJobPost(long jobPostId) {
@@ -159,8 +158,6 @@ public void deleteJobPost(long jobPostId) {
                                        .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
     jobPostRepository.delete(jobPost);
 }
-
-// ... 생략 ...
 ```
 
 ![delete 대신 update](./etc/3_2.jpg)
@@ -185,6 +182,8 @@ public void deleteJobPost(long jobPostId) {
 
 #### 응답 필드로 채용내용 추가
 
+- 채용 상세 페이지 조회에 대한 응답 dto(JobPostDetailResponse)에 채용 내용(description) 필드를 포함해서 반환합니다.
+
 #### 회사가 올린 다른 채용공고
 
 회사와 채용공고가 1:N 연관관계를 가지고 N인 채용공고에서 fk를 가집니다.
@@ -193,12 +192,9 @@ public void deleteJobPost(long jobPostId) {
 
 ```java
 // Company.java
-// ... 생략 ...
 
 @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 private List<JobPost> jobPostList = new ArrayList<>();
-
-// ... 생략 ...
 ```
 
 보통의 경우 위에 코드만으로 충분한데 삭제 구현을 soft delete 방식을 택했기 때문에
@@ -206,6 +202,8 @@ private List<JobPost> jobPostList = new ArrayList<>();
 jobPostList 에서 삭제되지 않은 채용공고만을 필터링하고 **과제 요구조건**에 맞게 채용공고_id만을 반환하도록 구현했습니다.
 
 ```java
+// JobPostService.java
+
 @Transactional(readOnly = true)
 public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
 	JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
@@ -238,12 +236,45 @@ public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
 
 <br>
 
-### 6. 채용 공고 지원
+### 6. 채용공고 지원
+
+**과제 요구 조건**(사용자는 1회만 지원 가능합니다.)에 대해서 단순하게 입력으로 주어진 채용공고_id와 사용자_id와 같은 값을 가지는 지원 내역(apply_job)이 있는지 조회하고 있으면 예외가 발생하도록 구현했습니다.
+
+```java
+// ApplyJobService.java
+
+@Transactional
+public void applyJobPost(ApplyJobCreateRequest request) {
+    JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(request.getJobPostId())
+                                       .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+    Member member = memberRepository.findById(request.getMemberId())
+                                    .orElseThrow(() -> new ApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 중복 지원 여부 판별
+    if(applyJobRepository.findByJobPostAndMember(jobPost, member).isPresent()) {
+        throw new ApplicationException(ErrorCode.ALREADY_APPLY_JOBPOST);
+    }
+
+    ApplyJob applyJob = ApplyJob.builder()
+                                .jobPost(jobPost)
+                                .member(member)
+                                .build();
+
+    applyJobRepository.save(applyJob);
+}
+```
+
+채용공고 지원 성공
 
 ![](./etc/6_1.jpg)
 
-![](./etc/6_2.jpg)
+채용공고 지원 실패
+
+- 해당 공고에 이미 지원했을 때
+
+![채용공고 지원 실패1](./etc/6_2.jpg)
 
 <br>
 
-### 7. 기타
+### 7. 테스트
+
