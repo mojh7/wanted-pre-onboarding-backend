@@ -34,7 +34,7 @@ DB
 
 4. 채용공고 목록 조회
 
-   4.1 단순 목록 조회
+   4.1 모든 채용공고 목록 조회
 
    4.2 검색 기능
 
@@ -103,15 +103,15 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 <br>
 
-### 1. 채용 공고 등록
+### 1. 채용공고 등록
 
-채용 공고 등록 성공
+채용공고 등록 성공
 
 ![채용 공고 등록 성공](./etc/1_1.jpg)
 
 
 
-채용 공고 등록 실패 
+채용공고 등록 실패 
 
 - 존재하지 않은 회사의 채용 공고를 등록하려 할 때
 
@@ -121,7 +121,9 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 <br>
 
-### 2. 채용 공고 수정
+### 2. 채용공고 수정
+
+채용공고 수정 API의 HTTP Method를 PUT으로 택해서 요청 필드가 비어 있지 않을 때 채용공고를 수정하도록 했습니다.
 
 ![](./etc/2_1.jpg)
 
@@ -129,12 +131,12 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 <br>
 
-### 3. 채용 공고 삭제
+### 3. 채용공고 삭제
 
 삭제는 soft delete 방식으로 구현 했습니다.
 
-- **과제 요구 조건**과는 상관없지만 기존에 삭제 구현 시 hard delete 방식으로만 구현했었는데 실제 서비스에서는 통계 데이터로 활용하거나 추후 복원할 가능성이 있는 등 여러 이유로 soft delete 방식으로 삭제를 구현할 수도 있다는 것을 알게 됐고 구현 시 hard delete와의 차이점을 알고 싶어 soft delete방식을 택했습니다.
-- 채용공고(job_post)에만 삭제 여부를 판별하는 `is_deleted`  컬럼을 가집니다.
+- **과제 요구 조건**과는 상관없지만 실제 서비스에서는 통계 데이터 활용 등 여러 이유로 삭제를 soft delete 방식으로 구현할 수도 있다는 것을 알게 됐고 구현 시 hard delete와의 차이점을 알고 싶어 soft delete방식을 택했습니다.
+- 채용공고(job_post)에만 삭제 여부를 판별하는 컬럼 `is_deleted` 을 가집니다.
 - JPA 구현체 Hibernate에서 Soft Delete 구현에 도움을 주는 `@SQLDelete` `@Where` 를 제공합니다
   - `@SQLDelete` 으로 entity를 삭제할 때 실행할 쿼리를 지정할 수 있어 `@SQLDelete(sql = "UPDATE job_post SET is_deleted = true WHERE id = ?")`  처럼  `is_delete` 값을 true로 update해서 soft delete를 구현합니다
   - `@Where`을 통해 entity의 조회 쿼리에  `where is_deleted = false` 와 같은 조건을 default로 추가할 수 있습니다.
@@ -143,9 +145,7 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 삭제 성공 응답
 
-![](./etc/3_1.jpg)
-
-
+![삭제 성공](./etc/3_1.jpg)
 
 `@SQLDelete`에 의해 delete 쿼리 대신 update쿼리가 실행됐습니다.
 
@@ -156,7 +156,7 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 @Transactional
 public void deleteJobPost(long jobPostId) {
     JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
-                                           .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+                                       .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
     jobPostRepository.delete(jobPost);
 }
 
@@ -171,13 +171,11 @@ public void deleteJobPost(long jobPostId) {
 
 <br>
 
-### 4. 채용 공고 목록 조회
+### 4. 채용공고 목록 조회
 
-#### 4.1 단순 목록 조회
+#### 4.1 모든 채용공고 목록 조회
 
 ![](./etc/4_1.jpg)
-
-
 
 #### 4.2 검색 기능
 
@@ -185,11 +183,58 @@ public void deleteJobPost(long jobPostId) {
 
 ### 5. 채용 상세 페이지 조회
 
-![](./etc/5_1.jpg)
+#### 응답 필드로 채용내용 추가
 
-![](./etc/5_2.jpg)
+#### 회사가 올린 다른 채용공고
 
-![](./etc/5_3.jpg)
+회사와 채용공고가 1:N 연관관계를 가지고 N인 채용공고에서 fk를 가집니다.
+
+다음과 같이 회사 entity 클래스에서 해당 회사가 등록한 채용공고 리스트를 가지도록 정의했습니다.
+
+```java
+// Company.java
+// ... 생략 ...
+
+@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+private List<JobPost> jobPostList = new ArrayList<>();
+
+// ... 생략 ...
+```
+
+보통의 경우 위에 코드만으로 충분한데 삭제 구현을 soft delete 방식을 택했기 때문에
+
+jobPostList 에서 삭제되지 않은 채용공고만을 필터링하고 **과제 요구조건**에 맞게 채용공고_id만을 반환하도록 구현했습니다.
+
+```java
+@Transactional(readOnly = true)
+public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
+	JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
+                                       .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));
+
+	List<Long> companyOtherJobPostList = jobPost.getCompany().getJobPostList().stream()
+    											.filter(jp -> !jp.isDeleted())
+                                                .map(JobPost::getId)
+                                                .collect(Collectors.toList());
+
+	return JobPostDetailResponse.of(jobPost, companyOtherJobPostList);
+}
+```
+
+
+
+채용 상세 페이지 조회 성공
+
+![원티드랩에서 올린 채용공고1](./etc/5_1.jpg)
+
+채용공고id 1번으로 조회했을 때 다른 채용공고_id로 6이 나왔고
+
+채용공고_id 6에 대해 채용공고 상세 페이지를 조회하면 다음과 같이 응답합니다.
+
+![원티드랩에서 올린 채용공고2](./etc/5_2.jpg)
+
+없거나 삭제된 채용공고에 대해 상세 페이지를 조회하면 예외가 발생합니다.
+
+![채용 상세 페이지 조회 실패](./etc/5_3.jpg)
 
 <br>
 
