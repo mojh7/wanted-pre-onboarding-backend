@@ -41,6 +41,7 @@ public class JobPostService {
                                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public JobPostDetailResponse retrieveJobPostDetail(Long jobPostId) {
         JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
                                            .orElseThrow(() -> new ApplicationException(ErrorCode.JOBPOST_NOT_FOUND));

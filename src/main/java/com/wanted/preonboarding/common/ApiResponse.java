@@ -1,7 +1,9 @@
 package com.wanted.preonboarding.common;
 
 import com.wanted.preonboarding.common.exception.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public class ApiResponse<T> {
     private final boolean success;
     private final T response;
