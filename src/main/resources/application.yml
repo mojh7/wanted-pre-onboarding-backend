@@ -4,3 +4,7 @@ spring:
 
   jackson:
     property-naming-strategy: SNAKE_CASE
+
+  web:
+    locale: en_US
+
