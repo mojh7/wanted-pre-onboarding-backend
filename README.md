@@ -42,13 +42,16 @@ DB
 
 6. 채용공고 지원
 
-7. 테스트 코드
-
-8. 기타
 
 ---
 
 ### 0. 공통
+
+#### 테스트
+
+- Service Layer의 단위 테스트에서 관련 의존성인 Repository를 모킹하고 테스트를 진행했습니다.
+  - 성공, 실패 로직에 대한 단위 테스트 작성
+- Repository는 따로 정의한 함수에 대해 테스트했습니다.
 
 #### API 공통 응답
 
@@ -323,9 +326,7 @@ public void applyJobPost(ApplyJobCreateRequest request) {
 
 <br>
 
-### 7. 테스트
+### TODO
 
-
-```
-
-```
+- 검색 기능 구현
+- API 문서화
