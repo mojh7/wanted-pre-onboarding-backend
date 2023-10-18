@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleCustomException(ApplicationException ex) {
         log.warn("CustomException ", ex);
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                             .body(ApiResponse.error(ex.getErrorCode()));
+                             .body(ApiResponse.error(ex));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

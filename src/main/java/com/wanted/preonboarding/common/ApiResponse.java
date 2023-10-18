@@ -1,6 +1,6 @@
 package com.wanted.preonboarding.common;
 
-import com.wanted.preonboarding.common.exception.ErrorCode;
+import com.wanted.preonboarding.common.exception.ApplicationException;
 import lombok.Getter;
 
 @Getter
@@ -25,8 +25,8 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, data, null);
     }
 
-    public static ApiResponse<?> error(ErrorCode errorCode) {
-        return new ApiResponse<>(false, null, new ErrorResponse<>(errorCode.getCode(), errorCode.getMessage()));
+    public static ApiResponse<?> error(ApplicationException ex) {
+        return new ApiResponse<>(false, null, new ErrorResponse<>(ex.getErrorCode().getCode(), ex.getErrorMessage()));
     }
 
     public static <E> ApiResponse<?> error(E message) {
