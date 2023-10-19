@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -39,6 +40,11 @@ public class JobPostController {
     @GetMapping("/job-post/{jobPostId}")
     public ApiResponse<JobPostDetailResponse> retrieveJobPostDetail(@PathVariable Long jobPostId) {
         return ApiResponse.succeed(jobPostService.retrieveJobPostDetail(jobPostId));
+    }
+
+    @GetMapping("/job-post/search")
+    public ApiResponse<List<JobPostResponse>> searchJobPost(@RequestParam(defaultValue = "") String keyword) {
+        return ApiResponse.succeed(jobPostService.searchJobPost(keyword));
     }
 
     @PutMapping("/job-post/{jobPostId}")

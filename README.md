@@ -94,15 +94,15 @@ API 응답이 `success`, `response`, `error` 공통된 형식을 가지고 응�
 
 #### API 명세서
 
-| 기능                      | Method | URL                   |
-| ------------------------- | ------ | --------------------- |
-| 채용공고 등록             | POST   | /job-post             |
-| 채용공고 수정             | PUT    | /job-post/{jobPostId} |
-| 채용공고 삭제             | DELETE | /job-post/{jobPostId} |
-| 모든 채용공고 목록 조회   | GET    | /job-post             |
-| 채용공고 검색             | GET    | 개발중                |
-| 채용공고 상세 페이지 조회 | GET    | /job-post/{jobPostId} |
-| 채용공고 지원             | POST   | /job-post/apply       |
+| 기능                      | Method | URL                           |
+| ------------------------- | ------ | ----------------------------- |
+| 채용공고 등록             | POST   | /job-post                     |
+| 채용공고 수정             | PUT    | /job-post/{jobPostId}         |
+| 채용공고 삭제             | DELETE | /job-post/{jobPostId}         |
+| 모든 채용공고 목록 조회   | GET    | /job-post                     |
+| 채용공고 검색             | GET    | /job-post/search?keyword=내용 |
+| 채용공고 상세 페이지 조회 | GET    | /job-post/{jobPostId}         |
+| 채용공고 지원             | POST   | /job-post/apply               |
 
 <br>
 
@@ -224,9 +224,85 @@ public void deleteJobPost(long jobPostId) {
 
 ![](./etc/4_1.jpg)
 
+<br>
+
 #### 4.2 검색 기능
 
-구현중...
+MySQL full-text Search와 nativeQuery로 검색 기능 구현
+
+설정 및 구현 과정
+
+1. 전문검색을 위한 full-text index를 생성합니다
+   - 채용공고에서는 채용 포지션, 채용 보상금, 사용 기술
+   - 회사에서는 회사명, 국가, 지역을 검색 범위에 포함하고자 각 테이블 마다 full-text index를 생성했습니다.
+
+```sql
+ALTER TABLE job_post
+    ADD FULLTEXT INDEX full_text_index (position, skills, description);
+
+ALTER TABLE company
+    ADD FULLTEXT INDEX full_text_index (name, nation, region);
+```
+
+2. innodb_ft_min_token_size 설정
+   - innodb 스토리지 엔진 기준 `innodb_ft_min_token_size` 기본값이 3입니다
+   - 한국어 검색 특성상 보통 2글자 이상부터 검색되어야 한다고 해서 값을 2로 설정했습니다.
+   - `innodb_ft_min_token_size` 값은 동적으로 구성할 수 없기 때문에 `my.ini` 파일에서 값 수정 후 재부팅
+3. rebuild full-text index
+   - 일부 변수를 수정하면 full-text index 재설정이 필요합니다.
+   - `OPTIMIZE TABLE table_name` 명령어를 통해 full-text index를 재설정 했습니다.
+     - 해당 명령어 실행 전 `set GLOBAL innodb_optimize_fulltext_only=ON;` 실행
+     - `show variables where variable_name LIKE 'innodb_opti%'`으로 확인하니 OFF로 되어 있어서 index 재설정이 되지 않았음
+4. 검색 구현
+   - 전문 검색은 `MATCH ... AGAINST` 구문을 사용하여 수행됩니다.
+     - 주의 :  NATCH(..)에 나열되는 컬럼은 반드시 전문 인덱스에 포함된 컬럼과 똑같은 순서로 나열
+   - 회사 테이블에서 회사명, 국가, 지역을 검색 범위에 포함시키기 위해 채용공고와 회사를 조인하고 각각 전문 검색을 실행했습니다.
+
+```java
+// JobPostRepository.java
+
+@Query(value = "SELECT * FROM job_post as j " +
+	"INNER JOIN company as c ON j.company_id = c.id AND j.is_deleted = false " +
+	"WHERE MATCH(j.position, j.skills, j.description) AGAINST ('+':keyword'*' in boolean mode) " +
+	"OR MATCH(c.name, c.nation, c.region) AGAINST ('+':keyword'*' in boolean mode);", nativeQuery = true)
+List<JobPost> fullTextSearch(@Param("keyword") String keyword);
+```
+
+
+
+더미 데이터
+
+회사 테이블
+
+| id(pk) | 회사명 (name) | 국가 (nation) | 지역 (region) |
+| ------ | ------------- | ------------- | ------------- |
+| 1      | 원티드랩      | 한국          | 서울          |
+| 2      | 네이버        | 한국          | 판교          |
+| 3      | 카카오        | 한국          | 판교          |
+| 4      | 원티드코리아  | 한국          | 부산          |
+| 5      | 우아한형제들  | 한국          | 서울          |
+
+채용공고 테이블
+
+| 번호 (id) | 회사 ID (company_id) | 포지션(position)         | 채용 보상금(reward) | 사용기술(skills) | 채용 내용(description)                                       | 삭제 여부(is_deleted) |
+| --------- | -------------------- | ------------------------ | ------------------- | ---------------- | ------------------------------------------------------------ | --------------------- |
+| 1         | 1                    | 백엔드 주니어 개발자     | 1,500,000           | Python           | 원티드랩에서 백엔드 주니어 개발자를 '적극' 채용합니다. 자격 요건은... | 0(false)              |
+| 2         | 2                    | Django 백엔드 개발자     | 1,000,000           | Django           | 네이버에서 Django 백엔드 개발자를 채용합니다.                | 0(false)              |
+| 3         | 4                    | 프론트엔드 개발자        | 500,000             | Javascript       | 원티드코리아에서 프론트엔드 개발자를 채용합니다.             | 0(false)              |
+| 4         | 3                    | Django 백엔드 개발자     | 500,000             | Python           | 카카오에서 백엔드 개발자를 채용합니다.                       | 0(false)              |
+| 5         | 2                    | Spring 백엔드 개발자     | 1,000,000           | Java, Spring     | 네이버에서 Java & Spring 백엔드 개발자를 채용합니다.         | 1(true)               |
+| 6         | 1                    | 프론트엔드 주니어 개발자 | 1,500,000           | React            | 원티드랩에서 프론트엔드 주니어 개발자를 채용합니다.          | 0(false)              |
+| 7         | 1                    | 안드로이드 개발자        | 1,500,000           | Kotlin           | 원티드랩에서 안드로이드 개발자를 채용합니다.                 | 1(true)               |
+
+
+
+검색 결과
+![](./etc/4_2_1.jpg)
+![](./etc/4_2_2.jpg)
+![](./etc/4_2_3.jpg)
+![](./etc/4_2_4.jpg)
+
+<br>
 
 ### 5. 채용 상세 페이지 조회
 
@@ -328,5 +404,7 @@ public void applyJobPost(ApplyJobCreateRequest request) {
 
 ### TODO
 
-- 검색 기능 구현
+- ~~검색 기능 구현~~
 - API 문서화
+
+- MySQL 전문 검색 n-gram parser도 있던데 확인해보기
