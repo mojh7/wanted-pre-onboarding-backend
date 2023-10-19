@@ -54,6 +54,12 @@ public class JobPostService {
         return JobPostDetailResponse.of(jobPost, companyOtherJobPostList);
     }
 
+    public List<JobPostResponse> searchJobPost(String keyword) {
+        return jobPostRepository.fullTextSearch(keyword).stream()
+                                .map(JobPostResponse::from)
+                                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void updateJobPost(JobPostUpdateRequest request, long jobPostId) {
         JobPost jobPost = jobPostRepository.findByIdAndIsDeletedFalse(jobPostId)
