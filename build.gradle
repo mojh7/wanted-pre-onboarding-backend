@@ -46,6 +46,9 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
 	// restdocs
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
