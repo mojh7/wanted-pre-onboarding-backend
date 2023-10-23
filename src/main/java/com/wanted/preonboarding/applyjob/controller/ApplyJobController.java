@@ -2,7 +2,7 @@ package com.wanted.preonboarding.applyjob.controller;
 
 import com.wanted.preonboarding.applyjob.dto.request.ApplyJobCreateRequest;
 import com.wanted.preonboarding.applyjob.service.ApplyJobService;
-import com.wanted.preonboarding.common.ApiResponse;
+import com.wanted.preonboarding.common.ApiResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +18,8 @@ public class ApplyJobController {
     }
 
     @PostMapping("/job-post/apply")
-    public ApiResponse<?> applyJobPost(@RequestBody @Valid ApplyJobCreateRequest applyJobCreateRequest) {
+    public ApiResult<?> applyJobPost(@RequestBody @Valid ApplyJobCreateRequest applyJobCreateRequest) {
         applyJobService.applyJobPost(applyJobCreateRequest);
-        return ApiResponse.succeed();
+        return ApiResult.succeed();
     }
 }

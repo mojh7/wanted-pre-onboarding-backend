@@ -1,6 +1,6 @@
 package com.wanted.preonboarding.jobpost.controller;
 
-import com.wanted.preonboarding.common.ApiResponse;
+import com.wanted.preonboarding.common.ApiResult;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostCreateRequest;
 import com.wanted.preonboarding.jobpost.dto.request.JobPostUpdateRequest;
 import com.wanted.preonboarding.jobpost.dto.response.JobPostDetailResponse;
@@ -27,36 +27,36 @@ public class JobPostController {
     }
 
     @PostMapping("/job-post")
-    public ApiResponse<?> createJobPost(@RequestBody @Valid JobPostCreateRequest jobPostCreateRequest) {
+    public ApiResult<?> createJobPost(@RequestBody @Valid JobPostCreateRequest jobPostCreateRequest) {
         jobPostService.createJobPost(jobPostCreateRequest);
-        return ApiResponse.succeed();
+        return ApiResult.succeed();
     }
 
     @GetMapping("/job-post")
-    public ApiResponse<List<JobPostResponse>> retrieveJobPostList() {
-        return ApiResponse.succeed(jobPostService.retrieveJobPostList());
+    public ApiResult<List<JobPostResponse>> retrieveJobPostList() {
+        return ApiResult.succeed(jobPostService.retrieveJobPostList());
     }
 
     @GetMapping("/job-post/{jobPostId}")
-    public ApiResponse<JobPostDetailResponse> retrieveJobPostDetail(@PathVariable Long jobPostId) {
-        return ApiResponse.succeed(jobPostService.retrieveJobPostDetail(jobPostId));
+    public ApiResult<JobPostDetailResponse> retrieveJobPostDetail(@PathVariable Long jobPostId) {
+        return ApiResult.succeed(jobPostService.retrieveJobPostDetail(jobPostId));
     }
 
     @GetMapping("/job-post/search")
-    public ApiResponse<List<JobPostResponse>> searchJobPost(@RequestParam(defaultValue = "") String keyword) {
-        return ApiResponse.succeed(jobPostService.searchJobPost(keyword));
+    public ApiResult<List<JobPostResponse>> searchJobPost(@RequestParam(defaultValue = "") String keyword) {
+        return ApiResult.succeed(jobPostService.searchJobPost(keyword));
     }
 
     @PutMapping("/job-post/{jobPostId}")
-    public ApiResponse<?> updateJobPost(@RequestBody @Valid JobPostUpdateRequest jobPostUpdateRequest,
-                                        @PathVariable Long jobPostId) {
+    public ApiResult<?> updateJobPost(@RequestBody @Valid JobPostUpdateRequest jobPostUpdateRequest,
+                                      @PathVariable Long jobPostId) {
         jobPostService.updateJobPost(jobPostUpdateRequest, jobPostId);
-        return ApiResponse.succeed();
+        return ApiResult.succeed();
     }
 
     @DeleteMapping("/job-post/{jobPostId}")
-    public ApiResponse<?> deleteJobPost(@PathVariable Long jobPostId) {
+    public ApiResult<?> deleteJobPost(@PathVariable Long jobPostId) {
         jobPostService.deleteJobPost(jobPostId);
-        return ApiResponse.succeed();
+        return ApiResult.succeed();
     }
 }
