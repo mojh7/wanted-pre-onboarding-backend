@@ -1,6 +1,6 @@
 package com.wanted.preonboarding.common.exception;
 
-import com.wanted.preonboarding.common.ApiResponse;
+import com.wanted.preonboarding.common.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ApiResult<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult()
           .getAllErrors()
@@ -29,34 +29,34 @@ public class GlobalExceptionHandler {
                   error.getDefaultMessage()));
 
         log.warn("MethodArgumentNotValid ", ex);
-        return ApiResponse.error(errors);
+        return ApiResult.error(errors);
     }
 
     @ExceptionHandler(HttpMessageConversionException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<?> handleHttpMessageConversionException(HttpMessageConversionException ex) {
+    public ApiResult<?> handleHttpMessageConversionException(HttpMessageConversionException ex) {
         log.warn("HttpMessageConversion ", ex);
-        return ApiResponse.error("Bad request body");
+        return ApiResult.error("Bad request body");
     }
 
     @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<ApiResponse<?>> handleCustomException(ApplicationException ex) {
+    public ResponseEntity<ApiResult<?>> handleCustomException(ApplicationException ex) {
         log.warn("CustomException ", ex);
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                             .body(ApiResponse.error(ex));
+                             .body(ApiResult.error(ex));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiResponse<?> handleAccessDeniedException(AccessDeniedException ex) {
+    public ApiResult<?> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("AccessDenied ", ex);
-        return ApiResponse.error("Access denied");
+        return ApiResult.error("Access denied");
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse<?> handleException(Exception ex) {
+    public ApiResult<?> handleException(Exception ex) {
         log.error("Internal server error", ex);
-        return ApiResponse.error("Internal server error");
+        return ApiResult.error("Internal server error");
     }
 }

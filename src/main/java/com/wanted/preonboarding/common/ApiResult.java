@@ -4,33 +4,33 @@ import com.wanted.preonboarding.common.exception.ApplicationException;
 import lombok.Getter;
 
 @Getter
-public class ApiResponse<T> {
+public class ApiResult<T> {
     private final boolean success;
     private final T response;
     private final ErrorResponse<?> error;
 
-    private static final ApiResponse<?> SUCCEED_RESPONSE = new ApiResponse<>(true, null, null);
+    private static final ApiResult<?> SUCCEED_RESPONSE = new ApiResult<>(true, null, null);
 
-    private ApiResponse(boolean success, T response, ErrorResponse<?> error) {
+    private ApiResult(boolean success, T response, ErrorResponse<?> error) {
         this.success = success;
         this.response = response;
         this.error = error;
     }
 
-    public static ApiResponse<?> succeed() {
+    public static ApiResult<?> succeed() {
         return SUCCEED_RESPONSE;
     }
 
-    public static <T> ApiResponse<T> succeed(T data) {
-        return new ApiResponse<>(true, data, null);
+    public static <T> ApiResult<T> succeed(T data) {
+        return new ApiResult<>(true, data, null);
     }
 
-    public static ApiResponse<?> error(ApplicationException ex) {
-        return new ApiResponse<>(false, null, new ErrorResponse<>(ex.getErrorCode().getCode(), ex.getErrorMessage()));
+    public static ApiResult<?> error(ApplicationException ex) {
+        return new ApiResult<>(false, null, new ErrorResponse<>(ex.getErrorCode().getCode(), ex.getErrorMessage()));
     }
 
-    public static <E> ApiResponse<?> error(E message) {
-        return new ApiResponse<>(false, null, new ErrorResponse<>(null, message));
+    public static <E> ApiResult<?> error(E message) {
+        return new ApiResult<>(false, null, new ErrorResponse<>(null, message));
     }
 
     private static class ErrorResponse<E> {
